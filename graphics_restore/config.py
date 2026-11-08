@@ -8,7 +8,7 @@ use_fallback_only 打开后，不管快照里记着什么，一律按 fallback_*
 
 from one_dragon.base.operation.application.application_config import ApplicationConfig
 
-from . import graphics_restore_const
+from . import const
 
 
 class GraphicsRestoreConfig(ApplicationConfig):
@@ -16,7 +16,7 @@ class GraphicsRestoreConfig(ApplicationConfig):
     def __init__(self, instance_idx: int, group_id: str) -> None:
         ApplicationConfig.__init__(
             self,
-            app_id=graphics_restore_const.APP_ID,
+            app_id=const.APP_ID,
             instance_idx=instance_idx,
             group_id=group_id,
         )
