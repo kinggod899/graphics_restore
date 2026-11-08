@@ -24,10 +24,11 @@ from zzz_od.application.zzz_application import ZApplication
 from zzz_od.operation.back_to_normal_world import BackToNormalWorld
 from zzz_od.operation.transport import Transport
 
-from . import graphics_restore_const, graphics_restore_screen
-from .graphics_restore_config import GraphicsRestoreConfig
-from .graphics_restore_screen import GraphicsRow
-from .graphics_restore_snapshot import LowSnapshotReader
+from . import const
+from . import screen as graphics_restore_screen  # 别名避开函数内表示截图的 screen 变量
+from .config import GraphicsRestoreConfig
+from .graphics_restore_snapshot import LOW_APP_ID, LowSnapshotReader
+from .screen import GraphicsRow
 
 if TYPE_CHECKING:
     from numpy import ndarray
@@ -44,11 +45,11 @@ class GraphicsRestoreApp(ZApplication):
         ZApplication.__init__(
             self,
             ctx=ctx,
-            app_id=graphics_restore_const.APP_ID,
-            op_name=graphics_restore_const.APP_NAME,
+            app_id=const.APP_ID,
+            op_name=const.APP_NAME,
         )
         self.config: GraphicsRestoreConfig = self.ctx.run_context.get_config(
-            app_id=graphics_restore_const.APP_ID,
+            app_id=const.APP_ID,
             instance_idx=self.ctx.current_instance_idx,
             group_id=application_const.DEFAULT_GROUP_ID,
         )
@@ -155,7 +156,7 @@ class GraphicsRestoreApp(ZApplication):
             return
 
         try:
-            snapshot = LowSnapshotReader()
+            snapshot = LowSnapshotReader(self.ctx.get_plugin_data_dir(LOW_APP_ID))
         except Exception:
             log.warning('读不到「降低游戏画质」的快照，改用兜底档位', exc_info=True)
             snapshot = None
@@ -299,7 +300,7 @@ def __debug() -> None:
     ctx = ZContext()
     ctx.init()
     ctx.run_context.run_application(
-        app_id=graphics_restore_const.APP_ID,
+        app_id=const.APP_ID,
         instance_idx=ctx.current_instance_idx,
         group_id=application_const.DEFAULT_GROUP_ID,
     )
