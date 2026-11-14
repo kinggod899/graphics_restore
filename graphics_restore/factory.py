@@ -8,9 +8,9 @@ from one_dragon.base.operation.application.application_config import Application
 from one_dragon.base.operation.application.application_factory import ApplicationFactory
 from one_dragon.base.operation.application_base import Application
 
-from . import graphics_restore_const
-from .graphics_restore_app import GraphicsRestoreApp
-from .graphics_restore_config import GraphicsRestoreConfig
+from . import const
+from .app import GraphicsRestoreApp
+from .config import GraphicsRestoreConfig
 
 if TYPE_CHECKING:
     from one_dragon.base.operation.application.application_run_record import (
@@ -20,12 +20,12 @@ if TYPE_CHECKING:
     from zzz_od.context.zzz_context import ZContext
 
 
-class GraphicsRestoreAppFactory(ApplicationFactory):
+class GraphicsRestoreFactory(ApplicationFactory):
 
     def __init__(self, ctx: ZContext) -> None:
-        ApplicationFactory.__init__(self, graphics_restore_const)
+        ApplicationFactory.__init__(self, const)
         self.ctx: ZContext = ctx
-        # 插件仓库要求 _const.py 与 plugin.json 逐字节一致，排序值不能写在那里，改在这里指定。
+        # 排序值不属于 const.py 也不属于 plugin.json，在这里指定。
         # 2900 让本应用排在一条龙最后（通知应用 3000 之前），把画质还原给玩的人用。
         self.priority: int | None = 2900
 

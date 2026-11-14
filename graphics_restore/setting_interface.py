@@ -23,9 +23,9 @@ from one_dragon_qt.widgets.setting_card.combo_box_setting_card import (
 from one_dragon_qt.widgets.setting_card.switch_setting_card import SwitchSettingCard
 from one_dragon_qt.widgets.vertical_scroll_interface import VerticalScrollInterface
 
-from . import graphics_restore_const
-from .graphics_restore_config import GraphicsRestoreConfig
-from .graphics_restore_snapshot import LowSnapshotReader
+from . import const
+from .config import GraphicsRestoreConfig
+from .graphics_restore_snapshot import LOW_APP_ID, LowSnapshotReader
 
 if TYPE_CHECKING:
     from one_dragon.base.operation.one_dragon_context import OneDragonContext
@@ -138,7 +138,7 @@ class GraphicsRestoreSettingInterface(VerticalScrollInterface, GroupIdMixin):
         super().on_interface_shown()
 
         self.config = self.ctx.run_context.get_config(
-            app_id=graphics_restore_const.APP_ID,
+            app_id=const.APP_ID,
             instance_idx=self.ctx.current_instance_idx,
             group_id=self.group_id,
         )
@@ -174,7 +174,7 @@ class GraphicsRestoreSettingInterface(VerticalScrollInterface, GroupIdMixin):
             return
 
         try:
-            snapshot = LowSnapshotReader()
+            snapshot = LowSnapshotReader(self.ctx.get_plugin_data_dir(LOW_APP_ID))
         except Exception:
             log.warning('读不到「降低游戏画质」的快照', exc_info=True)
             self.snapshot_label.setText('没有装「降低游戏画质」，会直接使用上面的兜底档位')

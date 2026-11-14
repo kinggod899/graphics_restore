@@ -1,9 +1,10 @@
 """读「降低游戏画质」留下的全局原始档位快照。
 
-快照文件是 config/graphics_low_snapshot.yml，不带实例目录。
+快照文件是 plugin_data/graphics_low/graphics_low_snapshot.yml，不带实例目录。
+旧版本写在 config/graphics_low_snapshot.yml，新位置找不到时回落到那里。
 这里不 import 降画质插件的模块，因为两个插件是各自独立的包、
 分开安装，跨插件 import 会在只装恢复画质时直接崩掉。
-直接按同一个 YamlConfig 模块名打开同一个文件即可。
+直接按约定的路径打开同一个文件即可。
 
 文件不存在（没装降画质插件、或从没跑过）时读到的都是空串，
 调用方据此回落到兜底档位。
@@ -11,17 +12,26 @@
 
 from __future__ import annotations
 
-from one_dragon.base.config.yaml_config import YamlConfig
+from pathlib import Path
 
-# 与 graphics_low_snapshot.MODULE_NAME 必须一致
-MODULE_NAME = 'graphics_low_snapshot'
+from one_dragon.base.config.yaml_operator import YamlOperator
+from one_dragon.utils import os_utils
+
+LOW_APP_ID: str = 'graphics_low'
+FILE_NAME: str = 'graphics_low_snapshot.yml'
+LEGACY_DIR: str = 'config'  # 旧版本存放快照的目录，相对一条龙工作目录
 
 
-class LowSnapshotReader(YamlConfig):
+class LowSnapshotReader(YamlOperator):
     """只读地打开降画质的快照文件。"""
 
-    def __init__(self) -> None:
-        YamlConfig.__init__(self, MODULE_NAME)
+    def __init__(self, low_data_dir: Path) -> None:
+        path = Path(low_data_dir) / FILE_NAME
+        if not path.is_file():
+            legacy_path = Path(os_utils.get_path_under_work_dir(LEGACY_DIR, FILE_NAME))
+            if legacy_path.is_file():
+                path = legacy_path
+        YamlOperator.__init__(self, str(path))
 
     @property
     def original_fps(self) -> str:
